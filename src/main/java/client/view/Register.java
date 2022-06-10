@@ -20,10 +20,9 @@ public class Register extends JFrame    {
     JPasswordField p1, p2;  // password fields
 
     int ln;
-    private AuthService authService;
+
     Register()
     {
-        authService = new AuthService(this);
         setVisible(true);
         setSize(700, 700);
         setLayout(null);
@@ -43,21 +42,7 @@ public class Register extends JFrame    {
         p2 = new JPasswordField();
         btn1 = new JButton("Submit");
         btn2 = new JButton("Clear");
-        btn1.addActionListener(e->{
-            try {
-               User user =  authService.Register(new RegisterPayLoad(tf1.getText(), tf2.getText(), p1.getText()));
-                if(user != null)
-                {
-                   System.out.println(user);
-                }
-                else
-                {
-                    System.out.println("User not created");
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+
 //        btn2.addActionListener(this);
         l1.setBounds(100, 30, 400, 30);
         l2.setBounds(80, 70, 200, 30);

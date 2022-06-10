@@ -26,11 +26,7 @@ public class ClientHandler extends   Thread{
                 event = (EventPayload) objectInputStream.readObject();
                 handleEvent.handle(event);
             } catch (IOException | ClassNotFoundException e) {
-                try {
-                    clientSocket.getSocket().close();
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
+
                 throw new RuntimeException(e);
             }
         }

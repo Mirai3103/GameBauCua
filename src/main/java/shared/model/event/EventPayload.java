@@ -1,6 +1,7 @@
 package shared.model.event;
 
 import lombok.*;
+import shared.model.UserInfo;
 
 import java.io.Serializable;
 
@@ -13,16 +14,7 @@ public class EventPayload implements Serializable {
     public static final Long serialVersionUID = 1L;
     private EventType eventType;
     private EventDataBase eventData;
-    private String token;
-
-    public String getToken() {
-        return this.token;
-    }
-
-
-    public void setToken(String token) {
-        this.token = token;
-    }
+    private UserInfo sender;
 
     public enum EventType {
         CHAT_WORLD,
@@ -31,6 +23,9 @@ public class EventPayload implements Serializable {
         JOIN_ROOM,
         LEAVE_ROOM,
         CREATE_ROOM,
+        JOIN_ROOM_RESPONSE,
+        HAS_A_USER_JOINED,
+        BET
 
     }
 }

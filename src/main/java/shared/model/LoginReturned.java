@@ -12,10 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginReturned  implements Serializable {
-
-
     @Serial
     private static final long serialVersionUID = -6500665823330706018L;
-    private String token;
     private UserInfo userInfo;
 }

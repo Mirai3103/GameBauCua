@@ -1,6 +1,7 @@
 package server.handler;
 
 import client.model.LoginPayLoad;
+import com.auth0.jwt.JWT;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import server.model.ClientSocket;
@@ -51,7 +52,8 @@ public class LoginState extends Thread {
                 if (user != null) {
                     System.out.println("LoginReturned: " + user);
                     ClientSocket clientSocket = new ClientSocket(user, socket, objectInputStream, objectOutputStream);
-                    LoginReturned loginReturned = new LoginReturned("ccx", new UserInfo(user));
+                    UserInfo userInfo =new UserInfo(user);
+                    LoginReturned loginReturned = new LoginReturned( userInfo);
                     System.out.println("LoginReturned: " + loginReturned);
                     objectOutputStream.writeObject(loginReturned);
                     handleEvent.getClientSockets().add(clientSocket);
@@ -60,7 +62,7 @@ public class LoginState extends Thread {
                     this.join();
                     break;
                 } else {
-                    LoginReturned loginReturned = new LoginReturned("", null);
+                    LoginReturned loginReturned = new LoginReturned(null);
                     objectOutputStream.writeObject(loginReturned);
                 }
             }

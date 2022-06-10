@@ -2,6 +2,7 @@ package client.view.component;
 
 
 import client.event.EventHandler;
+import client.utils.GlobalVariable;
 import lombok.Getter;
 import server.handler.HandleEvent;
 import shared.model.event.ChatWorld;
@@ -14,7 +15,7 @@ import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-
+@Getter
 public class ChatPanel extends JPanel {
     private JTextArea  enteredText = new JTextArea(10, 32);
     private JTextField typedText   = new JTextField();
@@ -26,6 +27,7 @@ public class ChatPanel extends JPanel {
         this.eventHandler = eventHandler;
     }
 
+
     public ChatPanel() throws URISyntaxException, IOException {
         setLayout(new BorderLayout());
         typedText.setColumns(34);
@@ -33,6 +35,7 @@ public class ChatPanel extends JPanel {
         enteredText.setEditable(false);
         enteredText.setBackground(Color.LIGHT_GRAY);
         enteredText.setFont(new Font("Arial", Font.PLAIN, 10));
+
 //        typedText.addActionListener(this);
         add(new JScrollPane(enteredText), BorderLayout.CENTER);
         JPanel panel = new JPanel();
@@ -42,8 +45,8 @@ public class ChatPanel extends JPanel {
         add(panel, BorderLayout.SOUTH);
         sendButton.addActionListener(e -> {
             try {
-                EventPayload eventPayload = new EventPayload(EventPayload.EventType.CHAT_WORLD, new ChatWorld(typedText.getText(), "tao"),"tokeb");
-               this.eventHandler.getObjectOutputStream().writeObject(eventPayload);
+                EventPayload eventPayload = new EventPayload(EventPayload.EventType.CHAT_WORLD, new ChatWorld(typedText.getText()), GlobalVariable.userInfo);
+                GlobalVariable.objectOutputStream.writeObject(eventPayload);
                 typedText.setText("");
             } catch (IOException e1) {
                 e1.printStackTrace();

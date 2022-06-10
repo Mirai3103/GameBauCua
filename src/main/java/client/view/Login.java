@@ -3,6 +3,7 @@ package client.view;
 import client.event.EventHandler;
 import client.model.LoginPayLoad;
 import client.service.AuthService;
+import client.utils.GlobalVariable;
 import shared.model.LoginReturned;
 
 import java.awt.*;
@@ -27,14 +28,13 @@ public class Login extends JFrame {
     private JButton btnNewButton;
     private JPanel contentPane;
     private JButton register;
-    private Socket socket;
-    private ObjectInputStream objectInputStream;
-    private ObjectOutputStream objectOutputStream;
     public Login() throws IOException {
-        socket = new Socket("localhost", 8080);
-        objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        objectInputStream = new ObjectInputStream(socket.getInputStream());
-        authService = new AuthService(this, objectInputStream, objectOutputStream);
+
+        GlobalVariable.socket =  new Socket("localhost", 8080);
+        GlobalVariable.objectOutputStream = new ObjectOutputStream(GlobalVariable.socket.getOutputStream());
+        GlobalVariable.objectInputStream = new ObjectInputStream(GlobalVariable.socket.getInputStream());
+
+        authService = new AuthService(this);
         System.out.println("Client connected");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(450, 190, 800, 600);
@@ -90,11 +90,12 @@ public class Login extends JFrame {
         btnNewButton.addActionListener(e -> {
             LoginPayLoad loginPayLoad = new LoginPayLoad(textField.getText(), passwordField.getText());
             try {
-              LoginReturned loginReturned=  authService.login(loginPayLoad);
+              LoginReturned loginReturned=  authService.Login(loginPayLoad);
               if(loginReturned!=null){
+                    GlobalVariable.userInfo = loginReturned.getUserInfo();
                   this.dispose();
                   System.out.println("Login success");
-                 new Lobby(loginReturned, new EventHandler(socket, objectOutputStream, objectInputStream,this));
+                 new Lobby(loginReturned, new EventHandler(this));
               }
             } catch (IOException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);

@@ -3,19 +3,25 @@ package client.view;
 import client.event.EventHandler;
 import client.event.EventListener;
 import client.view.component.ChatPanel;
+import lombok.Getter;
 import server.handler.HandleEvent;
 import server.model.User;
 import shared.model.LoginReturned;
 import shared.model.UserInfo;
+import shared.model.event.CreateRoom;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
+
+@Getter
 
 public class Lobby extends JFrame
 {
     private UserInfo user;
-    private String token;
     private JPanel panel1;
     private JPanel mainPanel;
     private ChatPanel chatPanel;
@@ -27,11 +33,12 @@ public class Lobby extends JFrame
     private JButton button6;
     private EventHandler eventHandler;
     public Lobby(LoginReturned loginReturned, EventHandler eventHandler){
-        super("sảnh chờ");
+
+        super("Lobby");
+        eventHandler.setCurrentFrame(this);
         this.user = loginReturned.getUserInfo();
-        this.token = loginReturned.getToken();
         this.eventHandler = eventHandler;
-        EventListener eventListener = new EventListener(eventHandler.getObjectInputStream());
+        EventListener eventListener = new EventListener();
         eventListener.start();
         eventListener.addListener(eventHandler);
 
@@ -71,6 +78,20 @@ public class Lobby extends JFrame
         panel1.add(button5);
         panel1.add(button6);
         add(panel1, BorderLayout.SOUTH);
+        button2.addActionListener(e->{
+                boolean isHasPassword = JOptionPane.showConfirmDialog(this, "Bạn có muốn tạo mật khẩu không?", "Mật khẩu", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+                String password = "";
+                if (isHasPassword) {
+                    password = JOptionPane.showInputDialog(this, "Nhập mật khẩu");
+                }
+                int maxPlayer = Integer.parseInt(JOptionPane.showInputDialog(this, "Nhập số người tối đa cho phòng"));
+                CreateRoom createRoom = new CreateRoom( password, maxPlayer);
+            try {
+                eventHandler.createRoom(createRoom);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
     setVisible(true);
 
