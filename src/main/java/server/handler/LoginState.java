@@ -51,7 +51,7 @@ public class LoginState extends Thread {
                 session.close();
                 if (user != null) {
                     System.out.println("LoginReturned: " + user);
-                    ClientSocket clientSocket = new ClientSocket(user, socket, objectInputStream, objectOutputStream);
+                    ClientSocket clientSocket = new ClientSocket(new UserInfo(user), socket, objectInputStream, objectOutputStream);
                     UserInfo userInfo =new UserInfo(user);
                     LoginReturned loginReturned = new LoginReturned( userInfo);
                     System.out.println("LoginReturned: " + loginReturned);

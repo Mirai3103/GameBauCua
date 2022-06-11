@@ -25,9 +25,7 @@ public class DiaForPlayer extends JPanel {
             source = path;
             imageBG = ImageIO.read(new File(path));
 
-            drawXucXac("src/main/resources/images/"+randomXucXac()+".png",70,30);
-            drawXucXac("src/main/resources/images/"+randomXucXac()+".png",150,30);
-            drawXucXac("src/main/resources/images/"+randomXucXac()+".png",105,85);
+            clearDia();
 
 
 
@@ -36,11 +34,15 @@ public class DiaForPlayer extends JPanel {
         }
     }
 
-    public void reDraw() throws IOException {
+    public void clearDia() throws IOException {
+        imageBG = ImageIO.read(new File("src/main/resources/images/caidiatrong.png"));
+    }
+
+    public void drawKQ(String[] xucXac) throws IOException {
         imageBG = ImageIO.read(new File(source));
-        drawXucXac("src/main/resources/images/"+randomXucXac()+".png",70,30);
-        drawXucXac("src/main/resources/images/"+randomXucXac()+".png",150,30);
-        drawXucXac("src/main/resources/images/"+randomXucXac()+".png",105,85);
+        drawXucXac("src/main/resources/images/"+xucXac[0]+".png",70,30);
+        drawXucXac("src/main/resources/images/"+xucXac[1]+".png",150,30);
+        drawXucXac("src/main/resources/images/"+xucXac[2]+".png",105,85);
     }
     public void drawXucXac(String path1,int x, int y) throws IOException {
         BufferedImage image1 = ImageIO.read(new File(path1));
@@ -63,9 +65,5 @@ public class DiaForPlayer extends JPanel {
         g2d.drawImage(imageBG, 0, 0, null);
     }
 
-    public String randomXucXac(){
-        int random = (int) (Math.random() * 6);
-        return xucXac[random];
-    }
 
 }

@@ -25,7 +25,10 @@ public class EventPayload implements Serializable {
         CREATE_ROOM,
         JOIN_ROOM_RESPONSE,
         HAS_A_USER_JOINED,
-        BET
+        BET,
+        START_GAME,
+        GET_AVAILABLE_ROOMS,
+        RETURN_AVAILABLE_ROOMS,
 
     }
 }

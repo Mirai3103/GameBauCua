@@ -14,7 +14,7 @@ public class UserInfo implements Serializable {
     private String fullName;
     private Long id;
     private Long money;
-    private Room currentRoom = null;
+    private int currentRoomId = -1;
     public UserInfo(User user){
         this.username = user.getUsername();
         this.fullName = user.getFullName();

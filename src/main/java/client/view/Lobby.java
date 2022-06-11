@@ -2,6 +2,7 @@ package client.view;
 
 import client.event.EventHandler;
 import client.event.EventListener;
+import client.utils.GlobalVariable;
 import client.view.component.ChatPanel;
 import lombok.Getter;
 import server.handler.HandleEvent;
@@ -36,6 +37,7 @@ public class Lobby extends JFrame
 
         super("Lobby");
         eventHandler.setCurrentFrame(this);
+        GlobalVariable.eventHandler = eventHandler;
         this.user = loginReturned.getUserInfo();
         this.eventHandler = eventHandler;
         EventListener eventListener = new EventListener();
@@ -92,7 +94,13 @@ public class Lobby extends JFrame
                 throw new RuntimeException(ex);
             }
         });
-
+    button3.addActionListener(e->{
+        try {
+            eventHandler.getListAvailableRoom();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    });
     setVisible(true);
 
     }
