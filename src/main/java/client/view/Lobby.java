@@ -36,6 +36,7 @@ public class Lobby extends JFrame
     public Lobby(LoginReturned loginReturned, EventHandler eventHandler){
 
         super("Lobby");
+        addWindowListener(GlobalVariable.windowAdapter);
         eventHandler.setCurrentFrame(this);
         GlobalVariable.eventHandler = eventHandler;
         this.user = loginReturned.getUserInfo();

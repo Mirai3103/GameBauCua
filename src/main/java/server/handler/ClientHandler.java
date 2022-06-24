@@ -3,6 +3,7 @@ package server.handler;
 import server.model.ClientSocket;
 import shared.model.event.EventPayload;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
@@ -26,6 +27,15 @@ public class ClientHandler extends   Thread{
                 event = (EventPayload) objectInputStream.readObject();
                 handleEvent.handle(event);
             } catch (IOException | ClassNotFoundException e) {
+                if(e instanceof EOFException) {
+                    System.out.println("Client disconnected");
+                    try {
+                        clientSocket.getSocket().close();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    break;
+                }
 
                 throw new RuntimeException(e);
             }

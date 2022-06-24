@@ -29,12 +29,10 @@ public class AuthService {
         GlobalVariable.objectOutputStream.writeObject(loginPayLoad);
         GlobalVariable.objectOutputStream.flush();
         LoginReturned loginReturned = (LoginReturned)  GlobalVariable.objectInputStream.readObject();
-        System.out.println(loginReturned.getUserInfo().getUsername());
         if (loginReturned.getUserInfo() == null) {
             JOptionPane.showMessageDialog(null, "wrong username or password", "Error", JOptionPane.ERROR_MESSAGE);
 
         }else {
-            System.out.println(loginReturned.getUserInfo());
             return loginReturned;
         }
         return null;

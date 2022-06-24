@@ -7,6 +7,7 @@ import shared.model.event.GameState;
 
 import javax.swing.*;
 import java.awt.*;
+
 @Getter
 
 
@@ -32,6 +33,8 @@ public class RoomForOwner extends javax.swing.JFrame {
     private int naiBet = 0;
     public GameState.State gameState;
     private JLabel stateLabel;
+    private JLabel timeLB;
+    private JLabel moneyLB;
     public RoomForOwner(){
         GlobalVariable.eventHandler.setCurrentFrame(this);
         bauButton = new JButton("Bau " + bauBet+"$");
@@ -54,7 +57,6 @@ public class RoomForOwner extends javax.swing.JFrame {
         setSize(500, 600);
         setResizable(false);
         mainPanel = new JPanel();
-        mainPanel.setBackground(Color.DARK_GRAY);
         panel1 = new JPanel();
         iHaveNoIdea = new IHaveNoIdea("src/main/resources/images/caidiatrong.png");
         stateLabel = new JLabel("");
@@ -92,6 +94,13 @@ public class RoomForOwner extends javax.swing.JFrame {
         add(panel1);
         setGameState(GameState.State.WAITING);
         setVisible(true);
+        timeLB = new JLabel("");
+        JPanel leftPanel = new JPanel(new GridLayout(2, 1));
+
+        moneyLB = new JLabel(GlobalVariable.userInfo.getMoney()+ "$");
+        leftPanel.add(timeLB);
+        leftPanel.add(moneyLB);
+        mainPanel.add(leftPanel, BorderLayout.WEST);
     }
     public void reDrawButton(){
         bauButton.setText("Bau " + bauBet+"$");
@@ -103,30 +112,51 @@ public class RoomForOwner extends javax.swing.JFrame {
     }
 
 
-
+    public void updateMoney(){
+        moneyLB.setText(GlobalVariable.userInfo.getMoney()+ "$");
+    }
     public void setGameState(GameState.State state){
         this.gameState = state;
         stateLabel.setText(state.toString());
 
-        switch (state){
-            case WAITING:
+        switch (state) {
+            case WAITING -> {
+                stateLabel.setText("Waiting for gAME start");
                 socButton.setEnabled(true);
                 moDiaButton.setEnabled(false);
                 resetGameButton.setEnabled(true);
                 startButton.setEnabled(true);
-                break;
-            case PLAYING:
+            }
+            case PLAYING -> {
                 socButton.setEnabled(false);
                 moDiaButton.setEnabled(false);
                 resetGameButton.setEnabled(false);
                 startButton.setEnabled(false);
-                break;
-            case END:
+                stateLabel.setText("Waiting player bet");
+                Thread timer = new Thread(() -> {
+                    int time = 61;
+                    while (time != -1) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        timeLB.setText("Time: " + time + "S");
+                        time--;
+                    }
+                    this.setGameState(GameState.State.END);
+                });
+                timer.start();
+                GlobalVariable.setTimeout(()->{
+                    this.setGameState(GameState.State.WAITING);
+                }, 1000*5);
+            }
+            case END -> {
                 moDiaButton.setEnabled(true);
                 socButton.setEnabled(false);
                 resetGameButton.setEnabled(false);
                 startButton.setEnabled(false);
-                break;
+            }
         }
     }
 

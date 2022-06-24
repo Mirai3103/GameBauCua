@@ -14,6 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Locale;
 
 @Getter
@@ -38,10 +39,13 @@ public class RoomForPlayer extends JFrame {
     private int naiBet = 0;
     private int bet = 0;
     private BetList betList;
+    private JLabel timeLB;
+    private JLabel moneyLB;
+    private JButton clearButton;
     @Setter
     private String[] result;
 
-    public RoomForPlayer() {
+    public RoomForPlayer() throws IOException {
         GlobalVariable.eventHandler.setCurrentFrame(this);
         betList = new BetList();
         setBackground(Color.DARK_GRAY);
@@ -53,7 +57,8 @@ public class RoomForPlayer extends JFrame {
         gaButton = new JButton("Ga");
         naiButton = new JButton("Nai");
 
-        Button clearButton = new Button("Clear");
+
+        clearButton = new JButton("Clear");
         clearButton.addActionListener(e -> {
             this.clearBet();
         });
@@ -79,31 +84,31 @@ public class RoomForPlayer extends JFrame {
                     bet++;
                     cuaBet += 500;
                     cuaButton.setText("Cua " + cuaBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.BAU));
+                    betList.addBet(new Bet(500, Bet.BetType.CUA));
                 }
                 case "tom" -> {
                     bet++;
                     tomBet += 500;
                     tomButton.setText("Tom " + tomBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.BAU));
+                    betList.addBet(new Bet(500, Bet.BetType.TOM));
                 }
                 case "ca" -> {
                     bet++;
                     caBet += 500;
                     caButton.setText("Ca " + caBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.BAU));
+                    betList.addBet(new Bet(500, Bet.BetType.CA));
                 }
                 case "ga" -> {
                     bet++;
                     gaBet += 500;
                     gaButton.setText("Ga " + gaBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.BAU));
+                    betList.addBet(new Bet(500, Bet.BetType.GA));
                 }
                 case "nai" -> {
                     bet++;
                     naiBet += 500;
                     naiButton.setText("Nai " + naiBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.BAU));
+                    betList.addBet(new Bet(500, Bet.BetType.NAI));
                 }
             }
             if (bet == 3) {
@@ -115,6 +120,8 @@ public class RoomForPlayer extends JFrame {
                 naiButton.setEnabled(false);
             }
         };
+        timeLB = new JLabel("60s");
+
 
         bauButton.addActionListener(actionListener);
         cuaButton.addActionListener(actionListener);
@@ -133,12 +140,22 @@ public class RoomForPlayer extends JFrame {
         panel1.add(naiButton);
         mainPanel.setLayout(new BorderLayout());
         mainPanel.add(diaForPlayer, BorderLayout.CENTER);
-        mainPanel.add(stateLabel, BorderLayout.NORTH);
+        JPanel topPanel = new JPanel(new GridLayout(1, 2));
+        topPanel.add(stateLabel);
+        topPanel.add(timeLB);
+        JPanel leftPanel = new JPanel(new GridLayout(2, 1));
+        moneyLB = new JLabel(GlobalVariable.userInfo.getMoney()+ "$");
+        leftPanel.add(moneyLB);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(clearButton, BorderLayout.SOUTH);
+        mainPanel.add(leftPanel, BorderLayout.WEST);
+
+
 
         add(mainPanel);
         add(panel1);
         setVisible(true);
+        setGameState(GameState.State.WAITING);
     }
 
     public void reDrawButton() {
@@ -149,18 +166,30 @@ public class RoomForPlayer extends JFrame {
         gaButton.setText("Ga " + gaBet + "$");
         naiButton.setText("Nai " + naiBet + "$");
     }
-
+    public void updateMoney(){
+        moneyLB.setText(GlobalVariable.userInfo.getMoney()+ "$");
+    }
 
     public void setGameState(GameState.State state) throws IOException {
         this.gameState = state;
         stateLabel.setText(state.toString());
-
+        System.out.println(GlobalVariable.userInfo);
 
         switch (state) {
-            case END: {
+            case END -> {
+                bauButton.setEnabled(false);
+                cuaButton.setEnabled(false);
+                tomButton.setEnabled(false);
+                caButton.setEnabled(false);
+                gaButton.setEnabled(false);
+                naiButton.setEnabled(false);
+                clearButton.setEnabled(false);
+
+                System.out.println("end game:");
                 EventPayload eventPayload = new EventPayload();
-                eventPayload.setEventType(EventPayload.EventType.BET);
+                eventPayload.setEventType(EventPayload.EventType.END_GAME);
                 eventPayload.setSender(GlobalVariable.userInfo);
+                System.out.println(GlobalVariable.userInfo);
                 eventPayload.setEventData(betList);
                 GlobalVariable.objectOutputStream.writeObject(eventPayload);
 
@@ -172,38 +201,46 @@ public class RoomForPlayer extends JFrame {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                }, 1000*10);
-                break;
+                }, 1000 * 10);
             }
-
-            case WAITING:
+            case WAITING -> {
                 bauButton.setEnabled(false);
                 cuaButton.setEnabled(false);
                 tomButton.setEnabled(false);
                 caButton.setEnabled(false);
                 gaButton.setEnabled(false);
                 naiButton.setEnabled(false);
+                clearButton.setEnabled(false);
                 diaForPlayer.clearDia();
-
-                break;
-
-
-            case PLAYING:
+            }
+            case PLAYING -> {
                 bauButton.setEnabled(true);
                 cuaButton.setEnabled(true);
                 tomButton.setEnabled(true);
                 caButton.setEnabled(true);
                 gaButton.setEnabled(true);
+                clearButton.setEnabled(true);
                 naiButton.setEnabled(true);
                 diaForPlayer.clearDia();
-                GlobalVariable.setTimeout(() -> {
-                    try {
-                       this.setGameState(GameState.State.END);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                Thread timer = new Thread(() -> {
+                    int time = 61;
+                    while (time != -1) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        timeLB.setText("Time: " + time + "S");
+                        time--;
                     }
-                }, 30*1000);
-                break;
+                    try {
+                        this.setGameState(GameState.State.END);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                timer.start();
+            }
         }
     }
 
@@ -239,9 +276,10 @@ public class RoomForPlayer extends JFrame {
         caBet = 0;
         gaBet = 0;
         naiBet = 0;
+        betList.setBets(new ArrayList<>());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         RoomForPlayer roomForOwner = new RoomForPlayer();
         roomForOwner.setVisible(true);
     }

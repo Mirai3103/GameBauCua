@@ -16,9 +16,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -48,11 +45,18 @@ public class EventHandler implements ChangeListener {
             case JOIN_ROOM_RESPONSE: {
                 JoinRoomResponse joinRoomResponse = (JoinRoomResponse) eventPayload.getEventData();
                 GlobalVariable.currentRoom = joinRoomResponse.getRoom();
+                System.out.println(joinRoomResponse.toString());
                 GlobalVariable.userInfo.setCurrentRoomId(joinRoomResponse.getRoom().getRoomId());
+
+
                 if (GlobalVariable.isRoomOwner()) {
-                    new RoomForOwner();
+                    GlobalVariable.currentFrame =   new RoomForOwner();
                 } else {
-                    new RoomForPlayer();
+                    try {
+                        GlobalVariable.currentFrame =     new RoomForPlayer();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
 
                 break;
@@ -101,6 +105,20 @@ public class EventHandler implements ChangeListener {
                 }
                 break;
             }
+            case UPDATE_USER_INFO:{
+                GlobalVariable.userInfo.setMoney(((UserInfo) eventPayload.getEventData()).getMoney()) ;
+                System.out.println(eventPayload);
+                try {
+                    if(GlobalVariable.isRoomOwner()){
+                        ((RoomForOwner)GlobalVariable.currentFrame ).updateMoney();
+                    }else {
+                        ((RoomForPlayer)GlobalVariable.currentFrame ).updateMoney();
+                    }
+                }catch (Exception ex){
+                    ex.printStackTrace();
+                }
+                break;
+            }
             default: {
                 break;
             }
@@ -121,10 +139,12 @@ public class EventHandler implements ChangeListener {
         eventPayload.setEventType(EventPayload.EventType.START_GAME);
         eventPayload.setEventData(new GameResult(xucXac));
         eventPayload.setSender(GlobalVariable.userInfo);
+        System.out.println(eventPayload.getSender());
         GlobalVariable.objectOutputStream.writeObject(eventPayload);
     }
 
     public void joinRoom(int roomId) throws IOException {
+        GlobalVariable.userInfo.setCurrentRoomId(roomId);
         EventPayload eventPayload = new EventPayload();
         eventPayload.setEventType(EventPayload.EventType.JOIN_ROOM);
         eventPayload.setEventData(new JoinRoomRequest(roomId, ""));

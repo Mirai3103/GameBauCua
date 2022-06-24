@@ -4,6 +4,7 @@ import client.event.EventHandler;
 import client.model.LoginPayLoad;
 import client.service.AuthService;
 import client.utils.GlobalVariable;
+import client.view.Toast.ToastMessage;
 import shared.model.LoginReturned;
 
 import java.awt.*;
@@ -33,7 +34,7 @@ public class Login extends JFrame {
         GlobalVariable.socket =  new Socket("localhost", 8080);
         GlobalVariable.objectOutputStream = new ObjectOutputStream(GlobalVariable.socket.getOutputStream());
         GlobalVariable.objectInputStream = new ObjectInputStream(GlobalVariable.socket.getInputStream());
-
+        addWindowListener(GlobalVariable.windowAdapter);
         authService = new AuthService(this);
         System.out.println("Client connected");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -85,7 +86,7 @@ public class Login extends JFrame {
         contentPane.add(register);
         register.addActionListener(e -> {
             this.dispose();
-             new Register();
+          GlobalVariable.currentFrame =   new Register();
         });
         btnNewButton.addActionListener(e -> {
             LoginPayLoad loginPayLoad = new LoginPayLoad(textField.getText(), passwordField.getText());
@@ -95,8 +96,9 @@ public class Login extends JFrame {
                     GlobalVariable.userInfo = loginReturned.getUserInfo();
                   this.dispose();
                   System.out.println("Login success");
-                 new Lobby(loginReturned, new EventHandler(this));
+                  GlobalVariable.currentFrame =    new Lobby(loginReturned, new EventHandler(this));
               }
+
             } catch (IOException | ClassNotFoundException ex) {
                 throw new RuntimeException(ex);
             }
@@ -105,6 +107,7 @@ public class Login extends JFrame {
 
         setResizable(false);
         setVisible(true);
+
 
     }
 }

@@ -14,9 +14,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Main {
+public class Server {
 
-    public static void main(String[] args) {
+    public static void run() {
         ServerSocket serverSocket = null;
         final ArrayList<ClientSocket> clientSockets = new ArrayList<>();
         final HandleEvent handleEvent = new HandleEvent(clientSockets);

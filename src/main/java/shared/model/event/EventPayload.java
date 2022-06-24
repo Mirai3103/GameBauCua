@@ -29,6 +29,8 @@ public class EventPayload implements Serializable {
         START_GAME,
         GET_AVAILABLE_ROOMS,
         RETURN_AVAILABLE_ROOMS,
+        END_GAME,
+        UPDATE_USER_INFO,
 
     }
 }

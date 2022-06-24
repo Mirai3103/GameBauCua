@@ -1,16 +1,16 @@
 package client.event;
 
 import client.utils.GlobalVariable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import shared.model.event.EventPayload;
 
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +33,15 @@ public class EventListener extends Thread{
                     listener.stateChanged(new ChangeEvent(event));
                 }
             } catch (Exception e) {
+                if(e.getMessage().equals("Connection reset")) {
+                    JOptionPane.showMessageDialog(null, "Mat ket noi voi server");
+                    try {
+                        GlobalVariable.socket.close();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    System.exit(0);
+                }
                 e.printStackTrace();
             }
         }
