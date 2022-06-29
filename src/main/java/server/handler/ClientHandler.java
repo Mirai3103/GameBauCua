@@ -25,7 +25,7 @@ public class ClientHandler extends   Thread{
         while (true) {
             try {
                 event = (EventPayload) objectInputStream.readObject();
-                handleEvent.handle(event);
+                handleEvent.handle(event, clientSocket);
             } catch (IOException | ClassNotFoundException e) {
                 if(e instanceof EOFException) {
                     System.out.println("Client disconnected");

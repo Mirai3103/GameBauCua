@@ -34,10 +34,13 @@ public class Login extends JFrame {
         GlobalVariable.socket =  new Socket("localhost", 8080);
         GlobalVariable.objectOutputStream = new ObjectOutputStream(GlobalVariable.socket.getOutputStream());
         GlobalVariable.objectInputStream = new ObjectInputStream(GlobalVariable.socket.getInputStream());
+        GlobalVariable.eventHandler = new EventHandler(this);
+
+
         addWindowListener(GlobalVariable.windowAdapter);
         authService = new AuthService(this);
         System.out.println("Client connected");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setBounds(450, 190, 800, 600);
         setResizable(false);
         contentPane = new JPanel();
@@ -96,7 +99,7 @@ public class Login extends JFrame {
                     GlobalVariable.userInfo = loginReturned.getUserInfo();
                   this.dispose();
                   System.out.println("Login success");
-                  GlobalVariable.currentFrame =    new Lobby(loginReturned, new EventHandler(this));
+                  GlobalVariable.currentFrame =    new Lobby(loginReturned, GlobalVariable.eventHandler);
               }
 
             } catch (IOException | ClassNotFoundException ex) {

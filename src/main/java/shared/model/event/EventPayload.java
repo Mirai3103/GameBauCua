@@ -31,6 +31,8 @@ public class EventPayload implements Serializable {
         RETURN_AVAILABLE_ROOMS,
         END_GAME,
         UPDATE_USER_INFO,
+        A_USER_LEFT, DISCONNECT, FAST_JOIN_ROOM, ROOM_NOT_AVAIL,
+
 
     }
 }

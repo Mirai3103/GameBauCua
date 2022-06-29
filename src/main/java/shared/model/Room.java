@@ -21,4 +21,5 @@ public class Room implements Serializable {
     private UserInfo roomOwner;
     private List<UserInfo> roomPlayers;
     private GameState.State roomState;
+
 }

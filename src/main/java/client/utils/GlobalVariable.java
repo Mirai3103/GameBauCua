@@ -20,11 +20,13 @@ public class GlobalVariable {
     public static Room currentRoom;
     public static EventHandler eventHandler;
     public static JFrame currentFrame;
+    public static JFrame lobbyFrame;
     public static WindowAdapter windowAdapter=new java.awt.event.WindowAdapter() {
         @Override
         public void windowClosing(java.awt.event.WindowEvent windowEvent) {
             try {
-                GlobalVariable.socket.close();
+                eventHandler.disconnect();
+                socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

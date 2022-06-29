@@ -13,6 +13,8 @@ import shared.model.event.GameState;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -42,10 +44,21 @@ public class RoomForPlayer extends JFrame {
     private JLabel timeLB;
     private JLabel moneyLB;
     private JButton clearButton;
+    private JLabel playerLB;
     @Setter
     private String[] result;
 
     public RoomForPlayer() throws IOException {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    GlobalVariable.eventHandler.leaveRoom();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         GlobalVariable.eventHandler.setCurrentFrame(this);
         betList = new BetList();
         setBackground(Color.DARK_GRAY);
@@ -143,9 +156,13 @@ public class RoomForPlayer extends JFrame {
         JPanel topPanel = new JPanel(new GridLayout(1, 2));
         topPanel.add(stateLabel);
         topPanel.add(timeLB);
-        JPanel leftPanel = new JPanel(new GridLayout(2, 1));
+        JPanel leftPanel = new JPanel(new GridLayout(3, 1));
         moneyLB = new JLabel(GlobalVariable.userInfo.getMoney()+ "$");
+        playerLB = new JLabel(""+GlobalVariable.currentRoom.getRoomPlayers().size()+"/"+GlobalVariable.currentRoom.getRoomMaxPlayer());
+
         leftPanel.add(moneyLB);
+        leftPanel.add(new JLabel());
+        leftPanel.add(playerLB);
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(clearButton, BorderLayout.SOUTH);
         mainPanel.add(leftPanel, BorderLayout.WEST);

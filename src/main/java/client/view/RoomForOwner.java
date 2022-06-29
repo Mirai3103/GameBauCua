@@ -7,6 +7,9 @@ import shared.model.event.GameState;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 @Getter
 
@@ -35,7 +38,19 @@ public class RoomForOwner extends javax.swing.JFrame {
     private JLabel stateLabel;
     private JLabel timeLB;
     private JLabel moneyLB;
+    private JLabel playerLB;
     public RoomForOwner(){
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    GlobalVariable.eventHandler.leaveRoom();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         GlobalVariable.eventHandler.setCurrentFrame(this);
         bauButton = new JButton("Bau " + bauBet+"$");
         cuaButton = new JButton("Cua " + cuaBet+"$");
@@ -84,6 +99,8 @@ public class RoomForOwner extends javax.swing.JFrame {
               String[] xucXac = iHaveNoIdea.reDraw();
                 iHaveNoIdea.repaint();
                 GlobalVariable.eventHandler.startGame(xucXac);
+                setGameState(GameState.State.PLAYING);
+                socButton.setEnabled(false);
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
@@ -95,11 +112,15 @@ public class RoomForOwner extends javax.swing.JFrame {
         setGameState(GameState.State.WAITING);
         setVisible(true);
         timeLB = new JLabel("");
-        JPanel leftPanel = new JPanel(new GridLayout(2, 1));
+        JPanel leftPanel = new JPanel(new GridLayout(4, 1));
 
         moneyLB = new JLabel(GlobalVariable.userInfo.getMoney()+ "$");
+        playerLB = new JLabel(""+GlobalVariable.currentRoom.getRoomPlayers().size()+"/"+GlobalVariable.currentRoom.getRoomMaxPlayer());
+
         leftPanel.add(timeLB);
         leftPanel.add(moneyLB);
+    leftPanel.add(new JLabel());
+        leftPanel.add(playerLB);
         mainPanel.add(leftPanel, BorderLayout.WEST);
     }
     public void reDrawButton(){
@@ -147,15 +168,16 @@ public class RoomForOwner extends javax.swing.JFrame {
                     this.setGameState(GameState.State.END);
                 });
                 timer.start();
-                GlobalVariable.setTimeout(()->{
-                    this.setGameState(GameState.State.WAITING);
-                }, 1000*5);
+
             }
             case END -> {
                 moDiaButton.setEnabled(true);
                 socButton.setEnabled(false);
                 resetGameButton.setEnabled(false);
                 startButton.setEnabled(false);
+                GlobalVariable.setTimeout(()->{
+                    this.setGameState(GameState.State.WAITING);
+                }, 1000*5);
             }
         }
     }

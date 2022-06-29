@@ -2,11 +2,13 @@ package server;
 
 import client.view.Login;
 import org.hibernate.Session;
+import org.slf4j.Logger;
 import server.handler.ClientHandler;
 import server.handler.HandleEvent;
 import server.handler.LoginState;
 import server.model.ClientSocket;
 import server.model.User;
+import server.utils.GlobalVariable;
 import server.utils.HibernateUtils;
 
 import java.io.IOException;
@@ -16,7 +18,9 @@ import java.util.ArrayList;
 
 public class Server {
 
+     static Logger logger = org.slf4j.LoggerFactory.getLogger(Server.class);
     public static void run() {
+
         ServerSocket serverSocket = null;
         final ArrayList<ClientSocket> clientSockets = new ArrayList<>();
         final HandleEvent handleEvent = new HandleEvent(clientSockets);
@@ -26,7 +30,7 @@ public class Server {
             serverSocket = new ServerSocket(8080);
             while (true) {
                 Socket socket = serverSocket.accept();
-                System.out.println("Client connected");
+                logger.info("New client connected");
                 LoginState loginState = new LoginState(socket, handleEvent);
                 loginState.start();
             }

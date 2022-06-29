@@ -4,6 +4,8 @@ import client.model.LoginPayLoad;
 import com.auth0.jwt.JWT;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import server.Server;
 import server.model.ClientSocket;
 import server.utils.HibernateUtils;
 import shared.model.LoginReturned;
@@ -21,11 +23,11 @@ public class LoginState extends Thread {
     private HandleEvent handleEvent;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
+    public static Logger logger = org.slf4j.LoggerFactory.getLogger(LoginState.class);
 
     public LoginState(Socket socket, HandleEvent handleEvent) {
         this.socket = socket;
         this.handleEvent = handleEvent;
-
         try {
             this.objectInputStream = new ObjectInputStream(socket.getInputStream());
             this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -40,7 +42,14 @@ public class LoginState extends Thread {
         LoginPayLoad loginPayLoad;
         try {
             while (true) {
-                loginPayLoad = (LoginPayLoad) objectInputStream.readObject();
+                try {
+                    loginPayLoad = (LoginPayLoad) objectInputStream.readObject();
+                }catch (ClassCastException e) {
+                    socket.close();
+                    logger.info("Client disconnected");
+                    return;
+                }
+
                 System.out.println("LoginPayLoad: " + loginPayLoad);
 
                 Session session = HibernateUtils.getSessionFactory().openSession();
@@ -50,6 +59,7 @@ public class LoginState extends Thread {
                         .uniqueResult();
                 session.close();
                 if (user != null) {
+                    logger.info("User " + loginPayLoad.getUsername() + " logged in");
                     System.out.println("LoginReturned: " + user);
                     ClientSocket clientSocket = new ClientSocket(new UserInfo(user), socket, objectInputStream, objectOutputStream);
                     UserInfo userInfo =new UserInfo(user);
@@ -62,6 +72,7 @@ public class LoginState extends Thread {
                     this.join();
                     break;
                 } else {
+                    logger.error("A user login failed");
                     LoginReturned loginReturned = new LoginReturned(null);
                     objectOutputStream.writeObject(loginReturned);
                 }
