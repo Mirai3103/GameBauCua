@@ -79,8 +79,16 @@ public class Lobby extends JFrame
         button4 = new JButton("xếp hạng");
         button5 = new JButton("Đăng xuất");
         button6 = new JButton("Thoát");
+        button4.addActionListener(e->{
+            try {
+                eventHandler.getRanks();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         button5.addActionListener(e->{
             try {
+                this.dispose();
                 new Login(false);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

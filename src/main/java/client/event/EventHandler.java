@@ -1,14 +1,12 @@
 package client.event;
 
 import client.utils.GlobalVariable;
-import client.view.DialogListRoom;
-import client.view.Lobby;
-import client.view.RoomForOwner;
-import client.view.RoomForPlayer;
+import client.view.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import shared.model.Ranks;
 import shared.model.UserInfo;
 import shared.model.event.*;
 
@@ -31,6 +29,12 @@ public class EventHandler implements ChangeListener {
         EventPayload eventPayload = (EventPayload) e.getSource();
         System.out.println("EventHandler: " + eventPayload.getEventType());
         switch (eventPayload.getEventType()) {
+            case GET_RANKS_RESPONSE:{
+                Ranks ranks = (Ranks) eventPayload.getEventData();
+                new DialogRank(currentFrame,ranks).run();
+                System.out.println(ranks);
+                break;
+            }
             case CHAT_WORLD: {
                 if (currentFrame.getTitle().equalsIgnoreCase("lobby")) {
                     Lobby lobby = (Lobby) currentFrame;
@@ -207,6 +211,12 @@ public class EventHandler implements ChangeListener {
     public void fastJoinRoom() throws IOException {
         EventPayload eventPayload = new EventPayload();
         eventPayload.setEventType(EventPayload.EventType.FAST_JOIN_ROOM);
+        eventPayload.setSender(GlobalVariable.userInfo);
+        GlobalVariable.objectOutputStream.writeObject(eventPayload);
+    }
+    public void getRanks() throws IOException {
+        EventPayload eventPayload = new EventPayload();
+        eventPayload.setEventType(EventPayload.EventType.GET_RANKS);
         eventPayload.setSender(GlobalVariable.userInfo);
         GlobalVariable.objectOutputStream.writeObject(eventPayload);
     }

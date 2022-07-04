@@ -11,6 +11,7 @@ import server.model.RoomResult;
 import server.model.User;
 import server.utils.GlobalVariable;
 import server.utils.HibernateUtils;
+import shared.model.Ranks;
 import shared.model.Room;
 import shared.model.UserInfo;
 import shared.model.event.*;
@@ -36,6 +37,50 @@ public class HandleEvent {
         this.ownerSocket = ownSocket;
         logger.info("User: " + event.getSender().getUsername() + " sent event " + event.getEventType());
         switch (event.getEventType()) {
+            case REGISTER -> {
+                Session session = HibernateUtils.getSessionFactory().openSession();
+                session.beginTransaction();
+                RegisterPayload registerPayload = (RegisterPayload) event.getEventData();
+                int userOld = session.createQuery("select a from User a where a.username:="+ registerPayload.getUserName()).getResultList().size();
+                EventPayload eventPayload = new EventPayload();
+                eventPayload.setEventType(EventPayload.EventType.REGISTER_RESPONSE);
+                if (userOld != 0){
+                    eventPayload.setEventData(new RegisterResponse("username đã tồn tại",false));
+                }else {
+                    User user = new User();
+                    user.setMoney(10000L);
+                    user.setUsername(registerPayload.getUserName());
+                    user.setFullName(registerPayload.getFullName());
+                    user.setPassword(registerPayload.getPassword());
+                    session.save(user);
+                    eventPayload.setEventData(new RegisterResponse("Đăng ký thành công",true));
+
+                }
+                ownSocket.getObjectOutputStream().writeObject(eventPayload);
+            }
+            case GET_RANKS -> {
+                Session session = HibernateUtils.getSessionFactory().openSession();
+                session.beginTransaction();
+                List<User> users = session.createQuery("select a from User a", User.class).setMaxResults(10).getResultList();
+                users.sort((a,b)->{
+                    if(a.getMoney()<b.getMoney()){
+                        return 1;
+                    }else if(a.getMoney()>b.getMoney()){
+                        return -1;
+                    }else {
+                        return 0;
+                    }
+                });
+                Ranks ranks = new Ranks(new ArrayList<>());
+                for (User u:users
+                     ) {
+                    ranks.getRanks().add(new UserInfo(u));
+                }
+                EventPayload eventPayload = new EventPayload();
+                eventPayload.setEventType(EventPayload.EventType.GET_RANKS_RESPONSE);
+                eventPayload.setEventData(ranks);
+                ownSocket.getObjectOutputStream().writeObject(eventPayload);
+            }
             case CHAT_WORLD -> {
                 for (ClientSocket clientSocket : clientSockets) {
                     clientSocket.getObjectOutputStream().writeObject(event);

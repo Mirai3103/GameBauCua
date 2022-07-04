@@ -218,7 +218,7 @@ public class RoomForPlayer extends JFrame {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                }, 1000 * 10);
+                }, 1000 * 1);
             }
             case WAITING -> {
                 bauButton.setEnabled(false);

@@ -40,7 +40,7 @@ public class Login extends JFrame {
         if(isFirstTime) {
             connectSocket("localhost", 8080);
         }
-
+        Dimension screeDimension = Toolkit.getDefaultToolkit().getScreenSize();
         addWindowListener(GlobalVariable.windowAdapter);
         authService = new AuthService(this);
         System.out.println("Client connected");
@@ -110,6 +110,7 @@ public class Login extends JFrame {
                 throw new RuntimeException(ex);
             }
         });
+        setLocation((screeDimension.width-getWidth())/2,(screeDimension.height-getHeight())/2);
 
 
         setResizable(false);
