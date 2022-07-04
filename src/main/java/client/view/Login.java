@@ -29,13 +29,17 @@ public class Login extends JFrame {
     private JButton btnNewButton;
     private JPanel contentPane;
     private JButton register;
-    public Login() throws IOException {
 
-        GlobalVariable.socket =  new Socket("localhost", 8080);
+    private void connectSocket(String host, int post) throws IOException {
+        GlobalVariable.socket =  new Socket(host, post);
         GlobalVariable.objectOutputStream = new ObjectOutputStream(GlobalVariable.socket.getOutputStream());
         GlobalVariable.objectInputStream = new ObjectInputStream(GlobalVariable.socket.getInputStream());
         GlobalVariable.eventHandler = new EventHandler(this);
-
+    }
+    public Login(boolean isFirstTime) throws IOException {
+        if(isFirstTime) {
+            connectSocket("localhost", 8080);
+        }
 
         addWindowListener(GlobalVariable.windowAdapter);
         authService = new AuthService(this);
@@ -112,10 +116,5 @@ public class Login extends JFrame {
         setVisible(true);
 
 
-    }
-}
-class Run{
-    public static void main(String[] args) throws IOException {
-        new Login();
     }
 }

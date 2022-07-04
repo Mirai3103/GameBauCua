@@ -104,85 +104,7 @@ public class HandleEvent {
                         break;
                     }
                 }
-                int[] list = new int[6];
-                if (rs != null) {
-                    for (String r : rs.getGameResult().getResult()) {
-                        switch (r) {
-                            case "bau" -> {
-                                list[0]++;
-
-                            }
-                            case "cua" -> {
-                                list[1]++;
-
-                            }
-                            case "tom" -> {
-                                list[2]++;
-
-                            }
-                            case "ca" -> {
-                                list[3]++;
-
-                            }
-                            case "ga" -> {
-                                list[4]++;
-
-                            }
-                            case "nai" -> {
-                                list[5]++;
-
-                            }
-
-                        }
-                    }
-                }
-
-                for (Bet bet : betList.getBets()) {
-                    switch (bet.getBetType()) {
-                        case BAU -> {
-                            list[0]--;
-                        }
-                        case CUA -> {
-
-                            list[1]--;
-
-                        }
-                        case TOM -> {
-
-                            list[2]--;
-
-                        }
-                        case CA -> {
-
-                            list[3]--;
-
-                        }
-                        case GA -> {
-
-                            list[4]--;
-
-                        }
-                        case NAI -> {
-
-                            list[5]--;
-
-                        }
-
-                    }
-                }
-                int sum = 0;
-                for (int t : list) {
-                    if (t < 0) {
-                        sum -= 500;
-                    }
-                    if (t > 0) {
-                        sum += (500 * t);
-                    }
-                    if (t == 0) {
-                        sum += 500;
-                    }
-                }
-
+                int sum = moneyCount(rs, betList);
                 Session session = HibernateUtils.getSessionFactory().openSession();
                 session.beginTransaction();
                 User user = session.get(User.class, userInfo.getId());
@@ -213,7 +135,7 @@ public class HandleEvent {
                 GameResult gameResult = (GameResult) event.getEventData();
                 RoomResult roomResult = null;
                 for (RoomResult roomResults : GlobalVariable.roomResults) {
-                    if (roomResult.getRoomId() == event.getSender().getCurrentRoomId()) {
+                    if (roomResults.getRoomId() == event.getSender().getCurrentRoomId()) {
                         roomResults.setGameResult(gameResult);
                         roomResult = roomResults;
                         break;
@@ -274,7 +196,6 @@ public class HandleEvent {
     public void joinRoom(Room room, UserInfo userInfo) throws IOException {
         if (room != null) {
             if (room.getRoomState() == GameState.State.WAITING) {
-                room.getRoomPlayers().add(userInfo);
                 for (ClientSocket clientSocket : clientSockets) {
                     if (Objects.equals(clientSocket.getUser().getId(), userInfo.getId())) {
                         clientSocket.getUser().setCurrentRoomId(room.getRoomId());
@@ -291,5 +212,23 @@ public class HandleEvent {
             logger.info("User: " + userInfo.getUsername() + " failed to join room");
             ownerSocket.getObjectOutputStream().writeObject(new EventPayload(EventPayload.EventType.ROOM_NOT_AVAIL, null, userInfo));
         }
+    }
+
+    public int moneyCount(RoomResult roomResult, BetList betList){
+        int sum = 0;
+        for (Bet bet : betList.getBets()) {
+            String stringOfEnum = bet.getBetType().toString().toLowerCase();
+            boolean isRight = false;
+            for (String s : roomResult.getGameResult().getResult()) {
+                if (s.equals(stringOfEnum)) {
+                    sum += 500;
+                    isRight = true;
+                }
+            }
+            if (!isRight) {
+                sum -= 500;
+            }
+        }
+        return sum;
     }
 }

@@ -18,7 +18,13 @@ public class HibernateUtils {
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder() //
                 .configure("hibernate.cfg.xml") // Load hibernate.cfg.xml from resource folder by default
                 .build();
-        Metadata metadata = new MetadataSources(serviceRegistry).getMetadataBuilder().build();
+        Metadata metadata = null;
+        try {
+             metadata = new MetadataSources(serviceRegistry).getMetadataBuilder().build();
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
         return metadata.getSessionFactoryBuilder().build();
     }
 

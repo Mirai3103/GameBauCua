@@ -79,6 +79,24 @@ public class Lobby extends JFrame
         button4 = new JButton("xếp hạng");
         button5 = new JButton("Đăng xuất");
         button6 = new JButton("Thoát");
+        button5.addActionListener(e->{
+            try {
+                new Login(false);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        //toDo: create rank dialog
+        button6.addActionListener(e->{
+            try {
+                GlobalVariable.socket.close();
+                eventHandler.disconnect();
+                System.exit(0);
+
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         button1.setFont(buttonFont);
         button2.setFont(buttonFont);
         button3.setFont(buttonFont);

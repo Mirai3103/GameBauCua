@@ -10,7 +10,7 @@ public class client {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    GlobalVariable.currentFrame = new Login();
+                    GlobalVariable.currentFrame = new Login(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

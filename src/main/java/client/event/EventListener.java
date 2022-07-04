@@ -11,6 +11,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.io.IOException;
 
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,14 @@ public class EventListener extends Thread{
                     }
                     System.exit(0);
                 }
-                e.printStackTrace();
+
+                if (e instanceof SocketException) {
+                    try {
+                        GlobalVariable.socket.close();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
             }
         }
     }

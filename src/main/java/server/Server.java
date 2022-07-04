@@ -6,12 +6,11 @@ import org.slf4j.Logger;
 import server.handler.ClientHandler;
 import server.handler.HandleEvent;
 import server.handler.LoginState;
+
 import server.model.ClientSocket;
-import server.model.User;
-import server.utils.GlobalVariable;
-import server.utils.HibernateUtils;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,9 +23,11 @@ public class Server {
         ServerSocket serverSocket = null;
         final ArrayList<ClientSocket> clientSockets = new ArrayList<>();
         final HandleEvent handleEvent = new HandleEvent(clientSockets);
-
+//        HttpServer httpServer = new HttpServer(new Router());
+//        httpServer.start(8081);
 
         try {
+
             serverSocket = new ServerSocket(8080);
             while (true) {
                 Socket socket = serverSocket.accept();
