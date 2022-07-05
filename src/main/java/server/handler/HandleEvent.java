@@ -4,6 +4,7 @@ import client.view.RoomForOwner;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.Length;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import server.model.ClientSocket;
@@ -241,18 +242,30 @@ public class HandleEvent {
 
     public int moneyCount(RoomResult roomResult, BetList betList){
         int sum = 0;
+        boolean []isPlus = {false,false,false,false,false,false};
+        int []money = {0,0,0,0,0,0};
+
         for (Bet bet : betList.getBets()) {
             String stringOfEnum = bet.getBetType().toString().toLowerCase();
-            boolean isRight = false;
+
+            int i = 0;
             for (String s : roomResult.getGameResult().getResult()) {
                 if (s.equals(stringOfEnum)) {
-                    sum += 500;
-                    isRight = true;
+
+                    isPlus[i] = true;
+                    money[i]+= bet.getBet();
+                }else {
+                    if(!isPlus[i]){
+                        money[i]-= bet.getBet();
+                        isPlus[i] = true;
+                    }
+
                 }
+                i++;
             }
-            if (!isRight) {
-                sum -= 500;
-            }
+        }
+        for (int i=0; i <= money.length; i++) {
+            sum = sum + money[i];
         }
         return sum;
     }

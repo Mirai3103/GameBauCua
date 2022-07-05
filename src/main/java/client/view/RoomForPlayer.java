@@ -17,6 +17,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Getter
@@ -28,11 +29,13 @@ public class RoomForPlayer extends JFrame {
     private JButton caButton;
     private JButton gaButton;
     private JButton naiButton;
+    private List<JButton> mucCuoc = new ArrayList<>();
     private DiaForPlayer diaForPlayer;
     private JPanel panel1;
     private JPanel mainPanel;
     public GameState.State gameState;
     private JLabel stateLabel;
+    private int muccuoctien = 500;
     private int cuaBet = 0;
     private int bauBet = 0;
     private int tomBet = 0;
@@ -59,6 +62,25 @@ public class RoomForPlayer extends JFrame {
                 }
             }
         });
+        JPanel muccuocpanel = new JPanel();
+        muccuocpanel.setLayout(new GridLayout(1,4));
+        for (int i = 500; i <= 2000; i+=500) {
+           JButton t = new JButton(i+ "$");
+            mucCuoc.add(t);
+           muccuocpanel.add(t);
+        }
+        for (JButton t: mucCuoc
+             ) {
+            t.addActionListener(e->{
+
+                muccuoctien = Integer.parseInt(t.getText().replace("$",""));
+                for (JButton bt: mucCuoc
+                ) {
+                    bt.setEnabled(true);
+                }
+                t.setEnabled(false);
+            });
+        }
         GlobalVariable.eventHandler.setCurrentFrame(this);
         betList = new BetList();
         setBackground(Color.DARK_GRAY);
@@ -89,39 +111,39 @@ public class RoomForPlayer extends JFrame {
             switch (((JButton) e.getSource()).getText().toLowerCase(Locale.ROOT)) {
                 case "bau" -> {
                     bet++;
-                    bauBet += 500;
+                    bauBet += muccuoctien;
                     bauButton.setText("Bau " + bauBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.BAU));
+                    betList.addBet(new Bet(muccuoctien, Bet.BetType.BAU));
                 }
                 case "cua" -> {
                     bet++;
-                    cuaBet += 500;
+                    cuaBet += muccuoctien;
                     cuaButton.setText("Cua " + cuaBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.CUA));
+                    betList.addBet(new Bet(muccuoctien, Bet.BetType.CUA));
                 }
                 case "tom" -> {
                     bet++;
-                    tomBet += 500;
+                    tomBet += muccuoctien;
                     tomButton.setText("Tom " + tomBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.TOM));
+                    betList.addBet(new Bet(muccuoctien, Bet.BetType.TOM));
                 }
                 case "ca" -> {
                     bet++;
-                    caBet += 500;
+                    caBet += muccuoctien;
                     caButton.setText("Ca " + caBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.CA));
+                    betList.addBet(new Bet(muccuoctien, Bet.BetType.CA));
                 }
                 case "ga" -> {
                     bet++;
-                    gaBet += 500;
+                    gaBet += muccuoctien;
                     gaButton.setText("Ga " + gaBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.GA));
+                    betList.addBet(new Bet(muccuoctien, Bet.BetType.GA));
                 }
                 case "nai" -> {
                     bet++;
-                    naiBet += 500;
+                    naiBet += muccuoctien;
                     naiButton.setText("Nai " + naiBet + "$");
-                    betList.addBet(new Bet(500, Bet.BetType.NAI));
+                    betList.addBet(new Bet(muccuoctien, Bet.BetType.NAI));
                 }
             }
             if (bet == 3) {
@@ -164,7 +186,11 @@ public class RoomForPlayer extends JFrame {
         leftPanel.add(new JLabel());
         leftPanel.add(playerLB);
         mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(clearButton, BorderLayout.SOUTH);
+        JPanel southpanel = new JPanel();
+        southpanel.setLayout(new GridLayout(2,1));
+        southpanel.add(muccuocpanel);
+        southpanel.add(clearButton);
+        mainPanel.add(southpanel, BorderLayout.SOUTH);
         mainPanel.add(leftPanel, BorderLayout.WEST);
 
 
@@ -201,6 +227,7 @@ public class RoomForPlayer extends JFrame {
                 gaButton.setEnabled(false);
                 naiButton.setEnabled(false);
                 clearButton.setEnabled(false);
+                System.out.println(betList);
 
                 System.out.println("end game:");
                 EventPayload eventPayload = new EventPayload();
@@ -287,6 +314,7 @@ public class RoomForPlayer extends JFrame {
     }
 
     public void clearBet() {
+        bet = 0 ;
         bauBet = 0;
         cuaBet = 0;
         tomBet = 0;
@@ -294,6 +322,18 @@ public class RoomForPlayer extends JFrame {
         gaBet = 0;
         naiBet = 0;
         betList.setBets(new ArrayList<>());
+        bauButton.setEnabled(true);
+        cuaButton.setEnabled(true);
+        tomButton.setEnabled(true);
+        caButton.setEnabled(true);
+        gaButton.setEnabled(true);
+        naiButton.setEnabled(true);
+        bauButton.setText("bau");
+        cuaButton.setText("cua");
+        tomButton.setText("tom");
+        caButton.setText("ca");
+        gaButton.setText("ga");
+        naiButton.setText("nai");
     }
 
     public static void main(String[] args) throws IOException {
