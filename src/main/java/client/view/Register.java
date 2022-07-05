@@ -2,16 +2,14 @@ package client.view;
 
 import client.model.RegisterPayLoad;
 import client.service.AuthService;
+import client.utils.GlobalVariable;
 import server.model.User;
-
+import shared.model.event.RegisterResponse;
+import shared.model.event.RegisterPayload;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.IOException;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class Register extends JFrame    {
     JLabel l1, l2, l3, l4, l5;  //all labels for textField
@@ -21,8 +19,9 @@ public class Register extends JFrame    {
 
     int ln;
 
-    Register()
+    Register(AuthService authService)
     {
+        JFrame frame = this;
         setVisible(true);
         setSize(700, 700);
         setLayout(null);
@@ -42,7 +41,23 @@ public class Register extends JFrame    {
         p2 = new JPasswordField();
         btn1 = new JButton("Submit");
         btn2 = new JButton("Clear");
-
+        btn1.addActionListener(e->{
+            shared.model.event.RegisterPayload registerPayLoad = new shared.model.event.RegisterPayload(tf1.getText(), tf2.getText(), p1.getText());
+            try {
+            RegisterResponse registerResponse = authService.registerResponse(registerPayLoad);
+            if(registerResponse.isSuccess()){
+                JOptionPane.showMessageDialog(frame, registerResponse.getMessage());
+                //toDo: back to login page
+                GlobalVariable.currentFrame = new Login(false);
+                frame.dispose();
+            }else {
+                JOptionPane.showMessageDialog(frame, registerResponse.getMessage(),
+                        "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+            } catch (IOException | ClassNotFoundException e1) {
+                e1.printStackTrace();
+            }
+        });
 //        btn2.addActionListener(this);
         l1.setBounds(100, 30, 400, 30);
         l2.setBounds(80, 70, 200, 30);
@@ -71,10 +86,7 @@ public class Register extends JFrame    {
         setResizable(false);
     }
 
-    public static void main(String args[])
-    {
-        new Register();
-    }
+
 
 }
 

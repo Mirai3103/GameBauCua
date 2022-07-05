@@ -1,10 +1,8 @@
 package client.view;
 
 import client.event.EventHandler;
-import client.model.LoginPayLoad;
 import client.service.AuthService;
 import client.utils.GlobalVariable;
-import client.view.Toast.ToastMessage;
 import shared.model.LoginReturned;
 
 import java.awt.*;
@@ -13,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import shared.model.LoginPayload;
 
 public class Login extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -93,10 +93,12 @@ public class Login extends JFrame {
         contentPane.add(register);
         register.addActionListener(e -> {
             this.dispose();
-          GlobalVariable.currentFrame =   new Register();
+          GlobalVariable.currentFrame =   new Register(authService);
         });
         btnNewButton.addActionListener(e -> {
-            LoginPayLoad loginPayLoad = new LoginPayLoad(textField.getText(), passwordField.getText());
+            LoginPayload loginPayLoad = new LoginPayload();
+            loginPayLoad.setPassword(new String(passwordField.getPassword()));
+            loginPayLoad.setUsername(textField.getText());
             try {
               LoginReturned loginReturned=  authService.Login(loginPayLoad);
               if(loginReturned!=null){

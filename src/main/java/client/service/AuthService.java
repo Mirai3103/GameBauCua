@@ -2,12 +2,6 @@ package client.service;
 
 
 import client.utils.GlobalVariable;
-import com.google.gson.Gson;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import client.model.ExceptionFromServer;
-import client.model.LoginPayLoad;
 
 import shared.model.LoginReturned;
 
@@ -15,6 +9,10 @@ import shared.model.LoginReturned;
 import javax.swing.*;
 
 import java.io.*;
+import shared.model.LoginPayload;
+import shared.model.event.EventPayload;
+import shared.model.event.RegisterPayload;
+import shared.model.event.RegisterResponse;
 
 public class AuthService {
     private final JFrame parentFrame;
@@ -23,11 +21,13 @@ public class AuthService {
         this.parentFrame = parentFrame;
     }
 
-    public LoginReturned Login(LoginPayLoad loginPayLoad) throws IOException, ClassNotFoundException {
+    public LoginReturned Login(LoginPayload loginPayLoad) throws IOException, ClassNotFoundException {
 
 
-        GlobalVariable.objectOutputStream.writeObject(loginPayLoad);
+        EventPayload eventPayload = new EventPayload(EventPayload.EventType.LOGIN_REQ, loginPayLoad,null);
+        GlobalVariable.objectOutputStream.writeObject(eventPayload);
         GlobalVariable.objectOutputStream.flush();
+
         LoginReturned loginReturned = (LoginReturned)  GlobalVariable.objectInputStream.readObject();
         if (loginReturned.getUserInfo() == null) {
             JOptionPane.showMessageDialog(null, "wrong username or password", "Error", JOptionPane.ERROR_MESSAGE);
@@ -36,5 +36,14 @@ public class AuthService {
             return loginReturned;
         }
         return null;
+    }
+
+    public RegisterResponse registerResponse(RegisterPayload registerPayload) throws IOException, ClassNotFoundException {
+        EventPayload eventPayload = new EventPayload(EventPayload.EventType.REGISTER, registerPayload,null);
+        GlobalVariable.objectOutputStream.writeObject(eventPayload);
+        GlobalVariable.objectOutputStream.flush();
+       EventPayload eventPayload1 = (EventPayload) GlobalVariable.objectInputStream.readObject();
+
+        return (RegisterResponse) eventPayload1.getEventData();
     }
 }

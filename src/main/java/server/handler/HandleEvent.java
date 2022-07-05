@@ -37,27 +37,7 @@ public class HandleEvent {
         this.ownerSocket = ownSocket;
         logger.info("User: " + event.getSender().getUsername() + " sent event " + event.getEventType());
         switch (event.getEventType()) {
-            case REGISTER -> {
-                Session session = HibernateUtils.getSessionFactory().openSession();
-                session.beginTransaction();
-                RegisterPayload registerPayload = (RegisterPayload) event.getEventData();
-                int userOld = session.createQuery("select a from User a where a.username:="+ registerPayload.getUserName()).getResultList().size();
-                EventPayload eventPayload = new EventPayload();
-                eventPayload.setEventType(EventPayload.EventType.REGISTER_RESPONSE);
-                if (userOld != 0){
-                    eventPayload.setEventData(new RegisterResponse("username đã tồn tại",false));
-                }else {
-                    User user = new User();
-                    user.setMoney(10000L);
-                    user.setUsername(registerPayload.getUserName());
-                    user.setFullName(registerPayload.getFullName());
-                    user.setPassword(registerPayload.getPassword());
-                    session.save(user);
-                    eventPayload.setEventData(new RegisterResponse("Đăng ký thành công",true));
 
-                }
-                ownSocket.getObjectOutputStream().writeObject(eventPayload);
-            }
             case GET_RANKS -> {
                 Session session = HibernateUtils.getSessionFactory().openSession();
                 session.beginTransaction();
