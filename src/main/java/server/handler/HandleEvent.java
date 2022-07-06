@@ -250,22 +250,15 @@ public class HandleEvent {
 
             int i = 0;
             for (String s : roomResult.getGameResult().getResult()) {
-                if (s.equals(stringOfEnum)) {
-
-                    isPlus[i] = true;
-                    money[i]+= bet.getBet();
-                }else {
-                    if(!isPlus[i]){
-                        money[i]-= bet.getBet();
-                        isPlus[i] = true;
-                    }
-
-                }
-                i++;
+               if(s.equals(stringOfEnum)){
+                   i++;
+               }
             }
-        }
-        for (int i=0; i <= money.length; i++) {
-            sum = sum + money[i];
+            if(i>0){
+                sum += bet.getBet()*i;
+            }else {
+                sum -= bet.getBet();
+            }
         }
         return sum;
     }

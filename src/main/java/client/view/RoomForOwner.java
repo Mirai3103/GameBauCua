@@ -91,9 +91,9 @@ public class RoomForOwner extends javax.swing.JFrame {
         socButton.setSize(100, 300);
         temp.setLayout(new FlowLayout());
         temp.add(socButton);
-        temp.add(moDiaButton);
-        temp.add(resetGameButton);
-        temp.add(startButton);
+//        temp.add(moDiaButton);
+//        temp.add(resetGameButton);
+//        temp.add(startButton);
         socButton.addActionListener(e->{
             try {
               String[] xucXac = iHaveNoIdea.reDraw();

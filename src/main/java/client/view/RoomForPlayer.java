@@ -201,14 +201,7 @@ public class RoomForPlayer extends JFrame {
         setGameState(GameState.State.WAITING);
     }
 
-    public void reDrawButton() {
-        bauButton.setText("Bau " + bauBet + "$");
-        cuaButton.setText("Cua " + cuaBet + "$");
-        tomButton.setText("Tom " + tomBet + "$");
-        caButton.setText("Ca " + caBet + "$");
-        gaButton.setText("Ga " + gaBet + "$");
-        naiButton.setText("Nai " + naiBet + "$");
-    }
+
     public void updateMoney(){
         moneyLB.setText(GlobalVariable.userInfo.getMoney()+ "$");
     }
@@ -237,6 +230,7 @@ public class RoomForPlayer extends JFrame {
                 eventPayload.setEventData(betList);
                 GlobalVariable.objectOutputStream.writeObject(eventPayload);
 
+
                 GlobalVariable.setTimeout(() -> {
                     try {
                         diaForPlayer.drawKQ(result);
@@ -245,9 +239,11 @@ public class RoomForPlayer extends JFrame {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-                }, 1000 * 1);
+                }, 1000);
             }
             case WAITING -> {
+
+                this.clearBet();
                 bauButton.setEnabled(false);
                 cuaButton.setEnabled(false);
                 tomButton.setEnabled(false);
@@ -258,6 +254,7 @@ public class RoomForPlayer extends JFrame {
                 diaForPlayer.clearDia();
             }
             case PLAYING -> {
+                diaForPlayer.clearDia();
                 bauButton.setEnabled(true);
                 cuaButton.setEnabled(true);
                 tomButton.setEnabled(true);

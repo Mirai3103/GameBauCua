@@ -119,13 +119,9 @@ public class Lobby extends JFrame
         panel1.add(button6);
         add(panel1, BorderLayout.SOUTH);
         button2.addActionListener(e->{
-            boolean isHasPassword = JOptionPane.showConfirmDialog(this, "Bạn có muốn tạo mật khẩu không?", "Mật khẩu", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-            String password = "";
-            if (isHasPassword) {
-                password = JOptionPane.showInputDialog(this, "Nhập mật khẩu");
-            }
+
             int maxPlayer = Integer.parseInt(JOptionPane.showInputDialog(this, "Nhập số người tối đa cho phòng"));
-            CreateRoom createRoom = new CreateRoom( password, maxPlayer);
+            CreateRoom createRoom = new CreateRoom( "", maxPlayer);
             try {
                 eventHandler.createRoom(createRoom);
             } catch (IOException ex) {

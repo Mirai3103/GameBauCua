@@ -34,19 +34,20 @@ public class EventListener extends Thread{
                     listener.stateChanged(new ChangeEvent(event));
                 }
             } catch (Exception e) {
-                if(e.getMessage().equals("Connection reset")) {
-                    JOptionPane.showMessageDialog(null, "Mat ket noi voi server");
-                    try {
-                        GlobalVariable.socket.close();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    System.exit(0);
-                }
+//                if(e.getMessage().equals("Connection reset")) {
+//                    JOptionPane.showMessageDialog(null, "Mat ket noi voi server");
+//                    try {
+//                        GlobalVariable.socket.close();
+//                    } catch (IOException ex) {
+//                        throw new RuntimeException(ex);
+//                    }
+//                    System.exit(0);
+//                }
 
                 if (e instanceof SocketException) {
                     try {
                         GlobalVariable.socket.close();
+                        JOptionPane.showMessageDialog(null, "Mat ket noi voi server");
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }

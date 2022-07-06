@@ -36,6 +36,7 @@ public class DiaForPlayer extends JPanel {
 
     public void clearDia() throws IOException {
         imageBG = ImageIO.read(new File("src/main/resources/images/caidiatrong.png"));
+        repaint();
     }
 
     public void drawKQ(String[] xucXac) throws IOException {
